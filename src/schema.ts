@@ -1,59 +1,46 @@
-import {GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList} from 'graphql';
-import {users, User, getArticles, Article} from './data';
+import {GraphQLSchema, GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList} from 'graphql';
 
-const ArticleType = new GraphQLObjectType({
-  name: 'Article',
-  fields: () => ({
-      title: {
-        type: GraphQLString,
-        resolve: (article: Article) => {
-          return article.title;
-        }
-      },
-      content: {
-        type: GraphQLString,
-        resolve: (article: Article) => {
-          return article.content;
-        }
-      }
-    }
-  )
-});
+const messages: string[] = [
+  'existing-message'
+]
 
-const UserType = new GraphQLObjectType({
-  name: 'User',
-  fields: () => ({
-    name: {
-      type: GraphQLString,
-      resolve: (user: User) => {
-        return user.name;
-      },
-    },
-    email: {
-      type: GraphQLString,
-      resolve: (user: User) => {
-        return user.email;
-      }
-    },
-    articles: {
-      type: GraphQLList(ArticleType),
-      resolve: (user: User) => {
-        return getArticles(user.name);
-      }
-    }
-  })
+const NewMessageInput = new GraphQLInputObjectType({
+  name: 'NewMessageInput',
+  fields: {
+    newMessage: {type: GraphQLString},
+  }
 });
 
 const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'Root',
-    fields: () => ({
-      users: {
-        type: GraphQLList(UserType),
-        resolve: () => users
-      }
+    query: new GraphQLObjectType({
+      name: 'Query',
+      fields: () => ({
+        messages: {
+          type: GraphQLList(GraphQLString),
+          resolve: () => messages
+        }
+      }),
     }),
-  }),
-});
+    mutation: new GraphQLObjectType({
+      name: 'Mutation',
+      fields: {
+        addMessage: {
+          type: GraphQLList(GraphQLString),
+          args: {
+            input: {
+              type: NewMessageInput
+            }
+          },
+          // FIXME how to specify the typing of `args`
+          resolve: (source, args) => {
+            const newMessage = args.input.newMessage;
+            messages.push(newMessage);
+            return messages;
+          }
+        }
+      }
+    })
+  })
+;
 
 export default schema;

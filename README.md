@@ -1,9 +1,11 @@
-TypeScript GraphQL Query Demo
-===========================
+TypeScript GraphQL Mutation Demo
+================================
 
-使用GraphQL，需要先定义type，同时在每个field处定义`resolve`返回数据。
+在GraphQL中如何修改远程数据。
 
-客户端将发送一个query string得到相应的数据。该query string会自动被解析、验证。
+感觉定义type很麻烦，mutation中的resolve那里的args不能指定类型，不太方便。
+
+真正使用的时候，可能要换一个使用decoration的typescript库
 
 ```
 npm install
